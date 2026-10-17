@@ -1,4 +1,6 @@
 # Furniture & Arts - Interactive Design Portfolio 
+<img width="1855" height="872" alt="Screenshot 2026-10-17 200928" src="https://github.com/user-attachments/assets/fb515b2c-4ad3-45fa-935c-820730a94c72" />
+
 
 A hybrid web project that bridges the gap between interior design theory and interactive 3D web technology. This project serves as a comprehensive portfolio piece, featuring curated mood boards, color theory explanations, and a fully functional, custom-coded 3D furniture configurator.
 
