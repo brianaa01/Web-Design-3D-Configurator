@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configurator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- model-viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Fraunces:opsz,wght@9..144,800&family=Playfair+Display:wght@400;600&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { 
+            margin: 0; 
+            background-color:#FAF8F5;
+            font-family: 'Playfair Display', serif;
+            color: #4A4238;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5vw;
+            background-color: transparent;
+        }
+
+        .logo {
+            font-family: 'Alex Brush', cursive;
+            font-size: 42px;
+            color: #333;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+        }
+
+        .nav-links span {
+            color: #333;
+            cursor: pointer;
+        }
+
+        .nav-links span.active {
+            color: #0066cc; 
+            font-weight: 500;
+        }
+
+        #catalog-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .main-title {
+            font-family: 'Fraunces', serif; 
+            font-size: 4rem;
+            color: #9C8471; 
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .main-subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #5d5349;
+        }
+
+        
+
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .product {
+            background-color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer; 
+            text-align: center;
+            transition: all 0.3s ease; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
+            width: 350px; 
+        }
+
+        .product:hover {
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        }
+
+        .product img {
+            width: 100%; 
+            height: 250px;
+            object-fit: contain; 
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .product h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 0;
+            color: #333;
+        }
+
+
+        /* --- Configurator page--- */
+        .fullscreen-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        
+        .top-controls {
+            position: absolute;
+            top: 30px;
+            left: 5vw;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .btn-top {
+            font-family: 'Montserrat', sans-serif;
+            padding: 10px 25px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #9C8471; 
+            color: white;
+            border: none;
+            border-radius: 30px; 
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-top:hover { 
+            background-color: #7A6555; 
+        }
+
+        #btn-back { 
+            background-color: transparent; 
+            border: 1px solid #9C8471;
+            color: #9C8471;
+        }
+        
+        #btn-back:hover {
+            background-color: #9C8471;
+            color: white;
+        }
+
+        
+        .texture-menu {
+            width: 260px;
+            max-height: 500px; 
+            overflow-y: auto; 
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px); 
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: none; 
+            position: absolute;
+            z-index: 10;
+            top: 85px;
+            left: 5vw;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .menu-subtitle {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7A6555;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-texture {
+            display: flex; 
+            align-items: center; 
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .option-texture:hover {
+            background-color: #FAF8F5; 
+            transform: translateX(5px); 
+        }
+
+        .option-texture img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%; 
+            margin-right: 15px; 
+            object-fit: cover;
+            border: 2px solid #eee;
+        }
+
+        .option-texture span {
+            font-size: 14px;
+            color: #4A4238;
+            font-weight: 500;
+        }
+
+        
+
+
+    </style>
+</head>
+<body>
+
+
+    <header class="navbar">
+        <h1 class="logo">Briana Bandila</h1>
+        <div class="nav-links">
+            <span>Home</span>
+            <span>Gallery</span>
+            <span class="active">3D Catalog</span>
+        </div>
+    </header>
+
+    <div id="catalog-page">
+    <h1 class="main-title">3D Furniture Catalog</h1>
+    <p class="main-subtitle">The foundation of any exceptional space begins with a curated vision. Explore our pieces in fully interactive 3D to see how raw materials converge.</p>
+    
+    <div class="product-grid">
+        
+        <div class="product" data-model="canapea1.glb">
+            <img src="canapea1.png" alt="Sofa">
+            <h3>Comfort Sofa</h3>
+        </div>
+
+        <div class="product" data-model="canapea2.glb">
+            <img src="canapea2.png" alt="Sofa">
+            <h3>Modern Sofa</h3>
+        </div>
+
+        <div class="product" data-model="scaun1.glb">
+            <img src="scaun1.png" alt="Chair">
+            <h3>Table Chair</h3>
+        </div>
+
+        <div class="product" data-model="pumpkin_chair.glb">
+            <img src="pumpkin_chair.png" alt="Pumpkin Chair">
+            <h3>Pumpkin Chair</h3>
+        </div>
+    </div>
+</div>
+
+
+<div id="configurator-page" class="fullscreen-container" style="display: none;">
+
+    <div class="top-controls">
+        <button id="btn-back" class="btn-top">← Back to Catalog</button>
+        <button id="btn-menu-seat" class="btn-top">Seat Textures</button>
+        <button id="btn-menu-base" class="btn-top" style="display: none;">Base Textures</button>
+        <button id="btn-menu-lighting" class="btn-top">Light</button>
+    </div>
+
+
+
+    <div id="menu-seat" class="texture-menu">
+        <h4 id="seat-title" class="menu-subtitle">Sofa Textures</h4>
+
+        <div class="option-texture" id="opt-seat-corduroy">
+            <img src="corduroy.jpg" alt="Corduroy"><span>Corduroy</span>
+        </div>
+        <div class="option-texture" id="opt-seat-brown">
+            <img src="earth_brown.jpg" alt="Brown"><span>Earth Brown</span>
+        </div>
+        <div class="option-texture" id="opt-seat-base">
+            <img src="base_cream.jpg" alt="Base"><span>Linen cream</span>
+        </div>
+        <div class="option-texture" id="opt-seat-leather">
+            <img src="kaki_leather.jpg" alt="Leather"><span>Kaki Leather</span>
+        </div>
+        <div class="option-texture" id="opt-seat-cream">
+            <img src="cream.jpg" alt="Cream"><span>Cream</span>
+        </div>
+    </div>
+
+   
+    <div id="menu-base" class="texture-menu"> 
+        <h4 class="menu-subtitle">Base Textures</h4>
+
+        <div class="option-texture" id="opt-base-corduroy">
+            <img src="corduroy.jpg" alt="Corduroy"><span>Corduroy</span>
+        </div>
+        <div class="option-texture" id="opt-base-brown">
+            <img src="earth_brown.jpg" alt="Brown"><span>Earth Brown</span>
+        </div>
+        <div class="option-texture" id="opt-base-base">
+            <img src="base_cream.jpg" alt="Base"><span>Linen cream</span>
+        </div>
+        <div class="option-texture" id="opt-base-leather">
+            <img src="kaki_leather.jpg" alt="Leather"><span>Kaki Leather</span>
+        </div>
+        <div class="option-texture" id="opt-base-cream">
+            <img src="cream.jpg" alt="Cream"><span>Cream</span>
+        </div>
+    </div>
+
+    <div id="menu-lighting" class="texture-menu">
+        <h4 class="menu-subtitle">Ambianță Lumină</h4>
+        <div class="option-texture" id="light-neutral">
+            <span>Neutral</span>
+        </div>
+        <div class="option-texture" id="light-warm">
+            <span>Warm Light</span>
+        </div>
+        <div class="option-texture" id="light-cool">
+            <span>Cool Light</span>
+        </div>
+    </div>
+
+    <model-viewer 
+       id="sofa"
+        src="canapea1.glb" 
+        camera-controls 
+        auto-rotate 
+        ar 
+        ar-modes="webxr scene-viewer quick-look"
+        style="width: 100vw; height: 90vh;">
+    </model-viewer>
+
+    <script>
+            
+        const catalogPage = document.getElementById('catalog-page');
+        const configuratorPage = document.getElementById('configurator-page');
+        const btnBack = document.getElementById('btn-back');
+        const viewer = document.querySelector('model-viewer'); 
+        const allProducts = document.querySelectorAll('.product');
+        const navbar = document.querySelector('.navbar');
+
+        const menuSeat = document.getElementById('menu-seat');
+        const menuBase = document.getElementById('menu-base');
+        const btnMenuSeat = document.getElementById('btn-menu-seat');
+        const btnMenuBase = document.getElementById('btn-menu-base');
+        const seatTitle = document.getElementById('seat-title');
+        const menuLighting = document.getElementById('menu-lighting');
+        const btnMenuLighting = document.getElementById('btn-menu-lighting');
+
+        
+        allProducts.forEach(product => {
+            product.addEventListener('click', () => {
+                
+                const selectedModel = product.getAttribute('data-model');
+                viewer.src = selectedModel;
+
+                if (selectedModel.includes('canapea')){
+                    btnMenuSeat.textContent = 'Sofa Textures';
+                    seatTitle.textContent = 'Sofa Textures';
+                } else {
+                    btnMenuSeat.textContent = 'Chair Textures';
+                    seatTitle.textContent = 'Chair Textures';
+                }
+
+                if (selectedModel === 'pumpkin_chair.glb') {
+                    btnMenuBase.style.display = 'BLOCK';
+                } else {
+                    btnMenuBase.style.display = 'none';
+                }
+                
+                catalogPage.style.display = 'none';
+                navbar.style.display = 'none';
+                configuratorPage.style.display = 'flex';
+
+                menuSeat.style.display = 'none';
+                menuBase.style.display = 'none';
+                menuLighting.style.display = 'none';
+            });
+        });
+
+
+        btnBack.addEventListener('click', () => {
+            configuratorPage.style.display = 'none';
+            catalogPage.style.display = 'block';
+            navbar.style.display = 'flex';
+            menuLighting.style.display = 'none';
+        });
+
+        btnMenuSeat.addEventListener('click', () => {
+            if(menuSeat.style.display === 'block') {
+                menuSeat.style.display = 'none';
+            } else {
+                menuSeat.style.display = 'block';
+                menuBase.style.display = 'none';
+                menuLighting.style.display = 'none';
+            }
+        });
+
+        btnMenuBase.addEventListener('click', () => {
+            if(menuBase.style.display === 'block') {
+                menuBase.style.display = 'none';
+            } else {
+                menuBase.style.display = 'block';
+                menuSeat.style.display = 'none';
+                menuLighting.style.display = 'none';
+            }
+        });
+
+        btnMenuLighting.addEventListener('click', () => {
+            if (menuLighting.style.display === 'block') {
+                menuLighting.style.display = 'none';
+            } else {
+                menuLighting.style.display = 'block';
+                menuSeat.style.display = 'none';
+                menuBase.style.display = 'none';
+            }
+        });
+
+
+        viewer.addEventListener('load', () => {
+
+            viewer.model.materials.forEach(material => {
+                material.setDoubleSided(true);
+            });
+
+            async function changeTexture(texturePath,materialName) {
+                const targetMaterial = viewer.model.getMaterialByName(materialName);
+
+                if(targetMaterial != null) {
+                    const newTexture = await viewer.createTexture(texturePath);
+                    
+                    targetMaterial.pbrMetallicRoughness.baseColorTexture.setTexture(newTexture);
+                    targetMaterial.pbrMetallicRoughness.setBaseColorFactor([1.0, 1.0, 1.0, 1.0]);
+                }
+            }
+
+            // Seat buttons //
+            document.getElementById('opt-seat-corduroy').addEventListener('click', () => {
+                changeTexture('corduroy.jpg','Material');
+                changeTexture('corduroy.jpg','Material_chair');
+            });
+
+            document.getElementById('opt-seat-brown').addEventListener('click', () => {
+                changeTexture('earth_brown.jpg','Material');
+                changeTexture('earth_brown.jpg','Material_chair');
+            });
+
+            document.getElementById('opt-seat-base').addEventListener('click', () => {
+                changeTexture('base_cream.jpg','Material');
+                changeTexture('base_cream.jpg','Material_chair');
+            });
+
+            document.getElementById('opt-seat-leather').addEventListener('click', () => {
+                changeTexture('kaki_leather.jpg','Material');
+                changeTexture('kaki_leather.jpg','Material_chair');
+            });
+
+            document.getElementById('opt-seat-cream').addEventListener('click', () => {
+                changeTexture('cream.jpg','Material');
+                changeTexture('cream.jpg','Material_chair');
+            });
+
+
+            // Base buttons //
+            document.getElementById('opt-base-corduroy').addEventListener('click', () => {
+                changeTexture('corduroy.jpg','Material_base');
+            });
+
+            document.getElementById('opt-base-brown').addEventListener('click', () => {
+                changeTexture('earth_brown.jpg','Material_base');
+            });
+
+            document.getElementById('opt-base-base').addEventListener('click', () => {
+                changeTexture('base_cream.jpg','Material_base');
+            });
+
+            document.getElementById('opt-base-leather').addEventListener('click', () => {
+                changeTexture('kaki_leather.jpg','Material_base');
+            });
+
+            document.getElementById('opt-base-cream').addEventListener('click', () => {
+                changeTexture('cream.jpg','Material_base');
+            });
+
+
+        });
+
+        document.getElementById('light-neutral').addEventListener('click', () => {
+            viewer.environmentImage = 'neutral';
+            viewer.exposure = 1.0;
+            viewer.shadowIntensity = 1.0;
+        });
+
+        document.getElementById('light-warm').addEventListener('click', () => {
+            viewer.environmentImage = 'neutral';
+            viewer.exposure = 1.6;
+            viewer.shadowIntensity = 0.5;
+        });
+
+        document.getElementById('light-cool').addEventListener('click', () => {
+            viewer.environmentImage = 'neutral';
+            viewer.exposure = 0.75;
+            viewer.shadowIntensity = 1.8;
+        });
+
+    </script>
+
+</body>
+</html>
